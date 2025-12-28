@@ -2,25 +2,24 @@
 # SPDX-FileCopyrightText: 2025 Kazuki Mitomi
 # SPDX-License-Identifier: BSD-3-Clause
 
-
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String
-from datetime import datetime
+from std_msgs.msg import Int16
 
 
 class Talker(Node):
     def __init__(self):
         super().__init__("talker")
-        self.pub = self.create_publisher(String, "formatted_time", 10)
-        self.create_timer(0.5, self.cb)
+        self.publisher = self.create_publisher(Int16, "countup", 10)
+        self.n = 0
+        self.create_timer(0.5, self.timer_callback)
 
-    def cb(self):
-        now = datetime.now()
-        msg = String()
-        msg.data = now.strftime("%Y-%m-%d %H:%M:%S")
-        self.pub.publish(msg)
-        self.get_logger().info(f"Publish: {msg.data}")
+    def timer_callback(self):
+        msg = Int16()
+        msg.data = self.n
+        self.publisher.publish(msg)
+        self.get_logger().info(f"Publish: {self.n}")
+        self.n += 1
 
 
 def main():
