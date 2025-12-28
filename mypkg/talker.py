@@ -4,28 +4,29 @@
 
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Int16
+from std_msgs.msg import String
+from datetime import datetime
 
 
-class Talker(Node):
+class TimePublisher(Node):
     def __init__(self):
         super().__init__("talker")
-        self.publisher = self.create_publisher(Int16, "countup", 10)
-        self.n = 0
-        self.create_timer(0.5, self.timer_callback)
+        self.publisher = self.create_publisher(String, "formatted_time", 10)
+        self.create_timer(1.0, self.timer_callback)
 
     def timer_callback(self):
-        msg = Int16()
-        msg.data = self.n
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        msg = String()
+        msg.data = now
         self.publisher.publish(msg)
-        self.get_logger().info(f"Publish: {self.n}")
-        self.n += 1
+        self.get_logger().info(f"Publish: {now}")
 
 
 def main():
     rclpy.init()
-    node = Talker()
+    node = TimePublisher()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
+
 
