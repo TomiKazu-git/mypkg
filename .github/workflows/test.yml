@@ -1,29 +1,21 @@
 name: test
 on: push
+
 jobs:
   test:
     runs-on: ubuntu-22.04
     container: ryuichiueda/ubuntu22.04-ros2:latest
-
-    strategy:
-      matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
-
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
 
-      - name: Install Python ${{ matrix.python-version }}
+      - name: Set up Python 3.10
         run: |
-          apt-get update
-          apt-get install -y \
-            python${{ matrix.python-version }} \
-            python${{ matrix.python-version }}-distutils
+          python3 --version
+          pip3 --version
 
-          update-alternatives --install /usr/bin/python python /usr/bin/python${{ matrix.python-version }} 1
-          python --version
-
-      - name: Build and test
+      - name: Build and run tests
         run: |
           rsync -av ./ /root/ros2_ws/src/mypkg/
           cd /root/ros2_ws
           bash -xv ./src/mypkg/test/test.bash /root
+
