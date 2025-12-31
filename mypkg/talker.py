@@ -15,11 +15,13 @@ class TimePublisher(Node):
         self.create_timer(1.0, self.timer_callback)
 
     def timer_callback(self):
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        msg = String()
-        msg.data = now
-        self.publisher.publish(msg)
-        self.get_logger().info(f"Publish: {now}")
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    msg = String()
+    msg.data = now
+    self.publisher.publish(msg)
+    self.get_logger().info(f"Publish: {now}")
+    with open("/tmp/mypkg_talker.log", "a") as f:
+        f.write(f"Publish: {now}\n")
 
 
 def main():

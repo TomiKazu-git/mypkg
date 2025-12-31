@@ -18,7 +18,9 @@ class Listener(Node):
         )
 
     def cb(self, msg):
-        self.get_logger().info(f"Listen: {msg.data}")
+    self.get_logger().info(f"Listen: {msg.data}")
+    with open("/tmp/mypkg_listener.log", "a") as f:
+        f.write(f"Listen: {msg.data}\n")
 
 
 def main():
