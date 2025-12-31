@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3 
 # SPDX-FileCopyrightText: 2025 Kazuki Mitomi
 # SPDX-License-Identifier: BSD-3-Clause
 

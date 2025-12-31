@@ -14,7 +14,7 @@ class Listener(Node):
             'chatter',
             self.listener_callback,
             10)
-        self.subscription  # prevent unused variable warning
+        self.subscription
         self.count = 0
 
     def listener_callback(self, msg):
