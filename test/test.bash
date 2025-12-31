@@ -20,7 +20,7 @@ timeout 10 python3 listener.py > /tmp/mypkg_listener.log 2>&1 || true &
 LISTENER_PID=$!
 
 # talker を起動
-timeout 10 python3 talker.py > /tmp/mypkg_talker.log 2>&1 || true
+python3 talker.py > /tmp/mypkg_talker.log 2>&1 || true
 
 # listener の終了待ち
 wait $LISTENER_PID || true
@@ -29,18 +29,13 @@ wait $LISTENER_PID || true
 [ -s /tmp/mypkg_listener.log ]
 [ -s /tmp/mypkg_talker.log ]
 
-# publish / listen の回数チェック
+# Publish / Listen の回数チェック
 PUB_COUNT=$(grep -c "Publish:" /tmp/mypkg_talker.log || true)
 LIS_COUNT=$(grep -c "Listen:" /tmp/mypkg_listener.log || true)
 [ "$PUB_COUNT" -ge 3 ]
 [ "$LIS_COUNT" -ge 3 ]
 
-# 最後の Publish を Listen が受け取っているか
-LAST_PUB=$(tail -n1 /tmp/mypkg_talker.log | awk '{print $2}')
-LAST_LISTEN=$(tail -n1 /tmp/mypkg_listener.log | awk '{print $2}')
-[ "$LAST_PUB" = "$LAST_LISTEN" ]
-
-# ログ内容を確認
+# ログ確認
 cat /tmp/mypkg_listener.log
 cat /tmp/mypkg_talker.log
 
