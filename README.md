@@ -4,8 +4,8 @@
 
 ## 説明
 [![test](https://github.com/TomiKazu-git/mypkg/actions/workflows/test.yml/badge.svg)](https://github.com/TomiKazu-git/mypkg/actions/workflows/test.yml)
-`mypkg` は、**ROS 2 の時刻を人が読みやすい形式（YYYY-MM-DD HH:MM:SS）に変換して配信する
-シンプルな時刻フォーマッタパッケージ**です。
+
+`mypkg` は、**ROS 2 の現在時刻を人が読みやすい形式に変換し、トピック通信で配信する学習用パッケージ**です。
 
 - `talker` ノードが現在時刻を文字列に変換してトピックに publish
 - `listener` ノードがその時刻文字列を subscribe して端末に表示
