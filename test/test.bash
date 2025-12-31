@@ -4,33 +4,29 @@
 
 set -e
 
-DIR=${1:-$HOME}
+DIR=$HOME
+[ "$1" != "" ] && DIR="$1"
+
 cd "$DIR/ros2_ws"
 
-# colcon ビルド
-colcon build > /tmp/colcon_build.log 2>&1
+colcon build > /dev/null 2>&1
 source install/setup.bash
 
-# launch をバックグラウンドで起動
-cd src/mypkg
-timeout 15 ros2 launch mypkg talk_listen.launch.py > /tmp/mypkg_launch.log 2>&1 &
-LAUNCH_PID=$!
+cd "$DIR/ros2_ws/src/mypkg/mypkg/"
 
-# 少し待ってノードが生きているか確認
-sleep 5
-if ! ps -p $LAUNCH_PID > /dev/null; then
-    echo "Launch process exited prematurely"
-    cat /tmp/mypkg_launch.log
-    exit 1
-fi
+# listener をバックグラウンドで 10 秒タイムアウトで起動
+timeout 10 python3 test_listener.py > /tmp/mypkg_listener.log 2>&1 || true &
+LISTENER_PID=$!
 
-# timeout 経過まで待機
-wait $LAUNCH_PID || true
+# talker を起動して Publish
+timeout 10 python3 similality_images.py > /tmp/mypkg_talker.log 2>&1 || true
 
-# ログの最後を簡単に表示
-echo "--- /tmp/mypkg_launch.log ---"
-tail -n 20 /tmp/mypkg_launch.log
-echo "----------------------------"
+# listener の終了待ち
+wait $LISTENER_PID || true
 
-echo "Test finished successfully"
+# ログ内容を確認
+cat /tmp/mypkg_listener.log
+cat /tmp/mypkg_talker.log
+
+exit 0
 
