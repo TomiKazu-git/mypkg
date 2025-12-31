@@ -1,17 +1,13 @@
 name: test
 on: push
-
 jobs:
   test:
     runs-on: ubuntu-22.04
     container: ryuichiueda/ubuntu22.04-ros2:latest
     steps:
       - uses: actions/checkout@v2
-
-      - name: Set up Python 3.10
-        run: |
-          python3 --version
-          pip3 --version
+      - name: Check Python version
+        run: python3 --version
 
       - name: Build and run tests
         run: |
