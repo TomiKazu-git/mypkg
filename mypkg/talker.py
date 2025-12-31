@@ -3,31 +3,32 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import rclpy
-from rclpy.node import Node
 from std_msgs.msg import String
-from datetime import datetime
+from rclpy.node import Node
 
-class TimePublisher(Node):
+class Talker(Node):
     def __init__(self):
-        super().__init__("talker")
-        self.publisher = self.create_publisher(String, "formatted_time", 10)
+        super().__init__('talker')
+        self.publisher_ = self.create_publisher(String, 'chatter', 10)
+        self.timer = self.create_timer(1.0, self.timer_callback)
         self.count = 0
-        self.create_timer(1.0, self.timer_callback)
 
     def timer_callback(self):
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         msg = String()
-        msg.data = now
-        self.publisher.publish(msg)
-        self.get_logger().info(f"Publish: {now}")
+        msg.data = f"Hello {self.count}"
+        self.publisher_.publish(msg)
+        print(f"Publish: {msg.data}", flush=True)
         self.count += 1
-        if self.count >= 3:
+        if self.count >= 5:
             rclpy.shutdown()
 
 def main():
     rclpy.init()
-    node = TimePublisher()
+    node = Talker()
     rclpy.spin(node)
     node.destroy_node()
+    rclpy.shutdown()
 
+if __name__ == "__main__":
+    main()
 

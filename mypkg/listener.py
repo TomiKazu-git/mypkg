@@ -3,24 +3,24 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import rclpy
-from rclpy.node import Node
 from std_msgs.msg import String
+from rclpy.node import Node
 
 class Listener(Node):
     def __init__(self):
-        super().__init__("listener")
-        self.count = 0
-        self.create_subscription(
+        super().__init__('listener')
+        self.subscription = self.create_subscription(
             String,
-            "formatted_time",
-            self.cb,
-            10
-        )
+            'chatter',
+            self.listener_callback,
+            10)
+        self.subscription  # prevent unused variable warning
+        self.count = 0
 
-    def cb(self, msg):
-        self.get_logger().info(f"Listen: {msg.data}")
+    def listener_callback(self, msg):
+        print(f"Listen: {msg.data}", flush=True)
         self.count += 1
-        if self.count >= 3:
+        if self.count >= 5:
             rclpy.shutdown()
 
 def main():
@@ -28,4 +28,8 @@ def main():
     node = Listener()
     rclpy.spin(node)
     node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == "__main__":
+    main()
 
