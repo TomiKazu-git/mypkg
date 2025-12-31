@@ -1,0 +1,8 @@
+# colcon build artifacts
+mypkg/build/
+mypkg/install/
+mypkg/log/
+
+# Python cache
+__pycache__/
+*.pyc
