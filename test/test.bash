@@ -4,6 +4,8 @@
 
 set -e
 
+source /opt/ros/humble/setup.bash
+
 DIR=~
 [ "$1" != "" ] && DIR="$1"
 
