@@ -11,23 +11,28 @@ DIR=~
 
 cd "$DIR/ros2_ws"
 
+# ビルドと環境設定
 colcon build > /dev/null 2>&1
 source install/setup.bash
 
+# listener をバックグラウンドで起動
 timeout 10 ros2 run mypkg listener > /tmp/mypkg_listener.log 2>/dev/null &
 LISTENER_PID=$!
 
+# talker を起動して Publish
 sleep 1
 timeout 6 ros2 run mypkg talker > /tmp/mypkg_talker.log 2>/dev/null
 
+# listener プロセス終了待機
 wait $LISTENER_PID || true
 
+# publish / listen の回数チェック
 PUB_COUNT=$(grep -c "Publish:" /tmp/mypkg_talker.log)
 LIS_COUNT=$(grep -c "Listen:" /tmp/mypkg_listener.log)
-
 [ "$PUB_COUNT" -ge 3 ]
 [ "$LIS_COUNT" -ge 3 ]
 
+# listen ログのタイムスタンプ形式チェック
 grep -E "Listen: [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}" /tmp/mypkg_listener.log > /dev/null
 
 # 最新の Publish を Listen が受け取っているか
@@ -35,7 +40,7 @@ LAST_PUB=$(tail -n1 /tmp/mypkg_talker.log | awk '{print $2}')
 LAST_LISTEN=$(tail -n1 /tmp/mypkg_listener.log | awk '{print $2}')
 [ "$LAST_PUB" = "$LAST_LISTEN" ]
 
-# タイマー周期（1秒程度）簡易チェック
+# タイマー周期（約1秒）簡易チェック
 PREV=""
 while read -r line; do
   TIME=$(echo "$line" | awk '{print $2}')
