@@ -5,7 +5,6 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
-
 def generate_launch_description():
 
     talker = Node(
@@ -22,8 +21,5 @@ def generate_launch_description():
         output='screen'
     )
 
-    return LaunchDescription([
-        talker,
-        listener
-    ])
+    return LaunchDescription([talker, listener])
 

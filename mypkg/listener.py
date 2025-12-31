@@ -6,10 +6,10 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 
-
 class Listener(Node):
     def __init__(self):
         super().__init__("listener")
+        self.count = 0
         self.create_subscription(
             String,
             "formatted_time",
@@ -18,15 +18,14 @@ class Listener(Node):
         )
 
     def cb(self, msg):
-    self.get_logger().info(f"Listen: {msg.data}")
-    with open("/tmp/mypkg_listener.log", "a") as f:
-        f.write(f"Listen: {msg.data}\n")
-
+        self.get_logger().info(f"Listen: {msg.data}")
+        self.count += 1
+        if self.count >= 3:
+            rclpy.shutdown()
 
 def main():
     rclpy.init()
     node = Listener()
     rclpy.spin(node)
     node.destroy_node()
-    rclpy.shutdown()
 
