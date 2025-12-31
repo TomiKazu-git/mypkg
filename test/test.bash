@@ -4,6 +4,7 @@
 
 set -e
 
+# デフォルトディレクトリを設定
 DIR=$HOME
 [ "$1" != "" ] && DIR="$1"
 
@@ -28,6 +29,11 @@ SECONDS=0
 while [ $SECONDS -lt 10 ]; do
     PUB_COUNT=$(grep -c "Publish:" /tmp/mypkg_talker.log || true)
     LIS_COUNT=$(grep -c "Listen:" /tmp/mypkg_listener.log || true)
+
+    # 空文字列をゼロに変換
+    PUB_COUNT=${PUB_COUNT:-0}
+    LIS_COUNT=${LIS_COUNT:-0}
+
     if [ "$PUB_COUNT" -ge 3 ] && [ "$LIS_COUNT" -ge 3 ]; then
         break
     fi
@@ -42,12 +48,8 @@ kill $LISTENER_PID $TALKER_PID 2>/dev/null || true
 [ -s /tmp/mypkg_talker.log ]
 
 # Publish / Listen の回数チェック
+PUB_COUNT=${PUB_COUNT:-0}
 [ "$PUB_COUNT" -ge 3 ]
+LIS_COUNT=${LIS_COUNT:-0}
 [ "$LIS_COUNT" -ge 3 ]
-
-# ログ確認
-cat /tmp/mypkg_listener.log
-cat /tmp/mypkg_talker.log
-
-exit 0
 
