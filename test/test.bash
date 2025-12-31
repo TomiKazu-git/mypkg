@@ -2,34 +2,30 @@
 # SPDX-FileCopyrightText: 2025 Kazuki Mitomi
 # SPDX-License-Identifier: BSD-3-Clause
 
-set -e  
-
-source /opt/ros/humble/setup.bash
+set -e
 
 DIR=$HOME
 [ "$1" != "" ] && DIR="$1"
 
 cd "$DIR/ros2_ws"
 
-if [ ! -f install/setup.bash ]; then
-    colcon build > /dev/null 2>&1
-fi
-
+# ビルド（標準出力・標準エラーを抑制）
+colcon build > /dev/null 2>&1
 source install/setup.bash
 
 # listener をバックグラウンドで起動
-timeout 10 ros2 run mypkg listener > /tmp/mypkg_listener.log 2>/dev/null &
-LISTENER_PID=$!
+cd "$DIR/ros2_ws/src/mypkg/mypkg/"
+timeout 10 python3 test_listener.py > /tmp/mypkg_listener.log 2>&1 &
 
-# talker を起動
-sleep 1
-timeout 6 ros2 run mypkg talker > /tmp/mypkg_talker.log 2>/dev/null
+# talker を起動して Publish
+timeout 10 python3 similality_images.py > /tmp/mypkg_talker.log 2>&1
 
-# listener プロセス終了待機
-wait $LISTENER_PID || true
+# listener の終了待ち
+wait
 
-# 正常終了すれば OK とする
-echo "Test finished successfully."
+# ログを確認して標準出力に出す
+cat /tmp/mypkg_listener.log
+cat /tmp/mypkg_talker.log
 
 exit 0
 
