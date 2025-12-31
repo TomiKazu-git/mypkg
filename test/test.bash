@@ -4,9 +4,11 @@
 
 set -e
 
+# ROS2 環境
 source /opt/ros/humble/setup.bash
 
-DIR=~
+# デフォルトはホームディレクトリ
+DIR=$HOME
 [ "$1" != "" ] && DIR="$1"
 
 cd "$DIR/ros2_ws"
@@ -15,32 +17,34 @@ cd "$DIR/ros2_ws"
 colcon build > /dev/null 2>&1
 source install/setup.bash
 
-# listener をバックグラウンドで起動
+# listener をバックグラウンド起動
 timeout 10 ros2 run mypkg listener > /tmp/mypkg_listener.log 2>/dev/null &
 LISTENER_PID=$!
 
-# talker を起動して Publish
+# talker を起動
 sleep 1
 timeout 6 ros2 run mypkg talker > /tmp/mypkg_talker.log 2>/dev/null
 
-# listener プロセス終了待機
+# listener 終了待機
 wait $LISTENER_PID || true
 
-# publish / listen の回数チェック
-PUB_COUNT=$(grep -c "Publish:" /tmp/mypkg_talker.log)
-LIS_COUNT=$(grep -c "Listen:" /tmp/mypkg_listener.log)
+# ==== しつこくテスト ====
+
+# publish / listen 回数チェック
+PUB_COUNT=$(grep -c "Publish:" /tmp/mypkg_talker.log || true)
+LIS_COUNT=$(grep -c "Listen:" /tmp/mypkg_listener.log || true)
 [ "$PUB_COUNT" -ge 3 ]
 [ "$LIS_COUNT" -ge 3 ]
 
-# listen ログのタイムスタンプ形式チェック
+# タイムスタンプ形式
 grep -E "Listen: [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}" /tmp/mypkg_listener.log > /dev/null
 
-# 最新の Publish を Listen が受け取っているか
+# 最新 Publish が listener に届いているか
 LAST_PUB=$(tail -n1 /tmp/mypkg_talker.log | awk '{print $2}')
 LAST_LISTEN=$(tail -n1 /tmp/mypkg_listener.log | awk '{print $2}')
 [ "$LAST_PUB" = "$LAST_LISTEN" ]
 
-# タイマー周期（約1秒）簡易チェック
+# タイマー周期チェック
 PREV=""
 while read -r line; do
   TIME=$(echo "$line" | awk '{print $2}')
@@ -52,6 +56,10 @@ while read -r line; do
   fi
   PREV="$TIME"
 done < <(grep "Listen:" /tmp/mypkg_listener.log)
+
+# ログが空でないか
+[ -s /tmp/mypkg_talker.log ]
+[ -s /tmp/mypkg_listener.log ]
 
 exit 0
 
