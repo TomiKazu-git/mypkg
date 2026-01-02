@@ -42,7 +42,7 @@ $ ros2 run mypkg talker
 #実行結果例
 [listener] Listen: 2025-12-31 12:00:00
 [listener] Listen: 2025-12-31 12:00:01
-
+...
 ```
 
 ## テスト環境
