@@ -4,28 +4,36 @@
 
 set -e
 
-DIR=$HOME
-[ "$1" != "" ] && DIR="$1"
-
+DIR=${1:-$HOME}
 cd "$DIR/ros2_ws"
 
-# colcon ビルド
 colcon build > /dev/null 2>&1
 source install/setup.bash
 
-# launch を一定時間実行してログを取得
-timeout 15 ros2 launch mypkg talk_listen.launch.py > /tmp/mypkg.log 2>&1 || true
+# launch をバックグラウンドで起動
+timeout 15 ros2 launch mypkg talk_listen.launch.py > /tmp/mypkg.log 2>&1 &
+PID=$!
 
-# Publish が行われているか
+sleep 8
+
+# Publish が出ているか
 grep -q "Publish" /tmp/mypkg.log
 
-# Listen が行われているか
+# Listen が出ているか
 grep -q "Listen" /tmp/mypkg.log
 
-# ログ表示（Actions確認用）
-echo "===== mypkg log ====="
-tail -n 20 /tmp/mypkg.log
-echo "====================="
+# Publish が複数回出ているか
+[ "$(grep -c 'Publish' /tmp/mypkg.log)" -ge 2 ]
+
+# Listen が複数回出ているか
+[ "$(grep -c 'Listen' /tmp/mypkg.log)" -ge 2 ]
+
+# プロセス終了
+kill $PID 2>/dev/null || true
+wait $PID 2>/dev/null || true
+
+# ログを表示（Actions確認用）
+cat /tmp/mypkg.log
 
 exit 0
 
