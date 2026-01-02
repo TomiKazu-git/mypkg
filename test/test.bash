@@ -13,19 +13,22 @@ source install/setup.bash
 LOG=/tmp/mypkg_test.log
 rm -f "$LOG"
 
-# launch で同時起動
-timeout 10 ros2 launch mypkg talk_listen.launch.py > "$LOG" 2>&1 || true
+# launch で同時起動（バックグラウンド）
+timeout 15 ros2 launch mypkg talk_listen.launch.py > "$LOG" 2>&1 &
+PID=$!
 
-# Publish と Listen が出ているか
+# 最大10秒、Publish/Listenが出るまで待つ
+for i in {1..10}; do
+    if grep -q "Publish:" "$LOG" && grep -q "Listen:" "$LOG"; then
+        echo "OK: Publish and Listen detected"
+        break
+    fi
+    sleep 1
+done
+
+# 最終チェック
 grep -q "Publish:" "$LOG"
 grep -q "Listen:" "$LOG"
 
-# chatter トピックを使っているか
-grep -q "chatter" "$LOG" || true
-
-# talker / listener が起動している形跡
-grep -q "talker" "$LOG" || true
-grep -q "listener" "$LOG" || true
-
-exit 0
+wait $PID || true
 
