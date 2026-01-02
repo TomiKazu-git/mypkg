@@ -9,24 +9,23 @@ DIR=$HOME
 
 cd "$DIR/ros2_ws"
 
+# colcon ビルド
 colcon build > /dev/null 2>&1
 source install/setup.bash
 
-cd "$DIR/ros2_ws/src/mypkg/mypkg/"
+# launch を一定時間実行してログを取得
+timeout 15 ros2 launch mypkg talk_listen.launch.py > /tmp/mypkg.log 2>&1 || true
 
-# listener をバックグラウンドで 10 秒タイムアウトで起動
-timeout 10 python3 test_listener.py > /tmp/mypkg_listener.log 2>&1 || true &
-LISTENER_PID=$!
+# Publish が行われているか
+grep -q "Publish" /tmp/mypkg.log
 
-# talker を起動して Publish
-timeout 10 python3 similality_images.py > /tmp/mypkg_talker.log 2>&1 || true
+# Listen が行われているか
+grep -q "Listen" /tmp/mypkg.log
 
-# listener の終了待ち
-wait $LISTENER_PID || true
-
-# ログ内容を確認
-cat /tmp/mypkg_listener.log
-cat /tmp/mypkg_talker.log
+# ログ表示（Actions確認用）
+echo "===== mypkg log ====="
+tail -n 20 /tmp/mypkg.log
+echo "====================="
 
 exit 0
 
