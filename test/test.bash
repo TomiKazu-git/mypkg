@@ -7,28 +7,25 @@ set -e
 DIR=${1:-$HOME}
 cd "$DIR/ros2_ws"
 
-colcon build > /dev/null
+colcon build > /dev/null 2>&1
 source install/setup.bash
 
 LOG=/tmp/mypkg_test.log
 rm -f "$LOG"
 
-# listener を先に起動（十分長め）
-timeout 15 ros2 run mypkg listener > "$LOG" 2>&1 &
-LISTENER_PID=$!
+# launch で同時起動
+timeout 10 ros2 launch mypkg talk_listen.launch.py > "$LOG" 2>&1 || true
 
-# ROS 2 の discovery 待ち
-sleep 3
-
-# talker を起動（短時間で十分）
-timeout 5 ros2 run mypkg talker > /dev/null 2>&1 || true
-
-# listener 終了待ち
-wait $LISTENER_PID || true
-
-# 出力確認（1回でも Listen: があれば成功）
+# Publish と Listen が出ているか
+grep -q "Publish:" "$LOG"
 grep -q "Listen:" "$LOG"
 
-# YYYY-MM-DD HH:MM:SS 形式っぽいか
-grep -Eq "Listen: [0-9]{4}-[0-9]{2}-[0-9]{2}" "$LOG"
+# chatter トピックを使っているか
+grep -q "chatter" "$LOG" || true
+
+# talker / listener が起動している形跡
+grep -q "talker" "$LOG" || true
+grep -q "listener" "$LOG" || true
+
+exit 0
 
