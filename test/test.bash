@@ -7,33 +7,36 @@ set -e
 DIR=${1:-$HOME}
 cd "$DIR/ros2_ws"
 
+# build
 colcon build > /dev/null 2>&1
 source install/setup.bash
 
-# launch をバックグラウンドで起動
-timeout 15 ros2 launch mypkg talk_listen.launch.py > /tmp/mypkg.log 2>&1 &
-PID=$!
+LOG=/tmp/mypkg_test.log
+rm -f "$LOG"
 
-sleep 8
+# listener を先に起動
+timeout 10 ros2 run mypkg listener > "$LOG" 2>&1 &
+LISTENER_PID=$!
 
-# Publish が出ているか
-grep -q "Publish" /tmp/mypkg.log
+# 少し待つ
+sleep 1
+
+# talker を起動
+timeout 5 ros2 run mypkg talker > /dev/null 2>&1 || true
+
+# listener 終了待ち
+wait $LISTENER_PID || true
+
 
 # Listen が出ているか
-grep -q "Listen" /tmp/mypkg.log
+grep -q "Listen:" "$LOG"
 
-# Publish が複数回出ているか
-[ "$(grep -c 'Publish' /tmp/mypkg.log)" -ge 2 ]
+# Publish に対応した文字列が受信されているか
+grep -q "Hello" "$LOG"
 
-# Listen が複数回出ているか
-[ "$(grep -c 'Listen' /tmp/mypkg.log)" -ge 2 ]
-
-# プロセス終了
-kill $PID 2>/dev/null || true
-wait $PID 2>/dev/null || true
-
-# ログを表示（Actions確認用）
-cat /tmp/mypkg.log
+# 複数回受信しているか
+COUNT=$(grep -c "Listen:" "$LOG")
+[ "$COUNT" -ge 2 ]
 
 exit 0
 
