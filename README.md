@@ -27,8 +27,8 @@ $ source install/setup.bash
 $ ros2 launch mypkg talk_listen.launch.py
 
 #実行結果例
-[listener] Listen: 2025-12-31 12:00:00
-[listener] Listen: 2025-12-31 12:00:01
+[listener-2] Listen: 2025-12-31 12:00:00
+[listener-2] Listen: 2025-12-31 12:00:01
 ...
 ```
 
