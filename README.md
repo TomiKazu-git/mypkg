@@ -15,7 +15,7 @@
 ### ビルド
 
 ```
-$cd ~/ros2_ws/src
+$ cd ~/ros2_ws/src
 $ git clone [https://github.com/TomiKazu-git/mypkg.git](https://github.com/TomiKazu-git/mypkg.git)
 $ cd ~/ros2_ws
 $ colcon build
