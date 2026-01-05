@@ -5,30 +5,22 @@
 set -e
 
 DIR=${1:-$HOME}
+
 cd "$DIR/ros2_ws"
 
+# ビルド
 colcon build > /dev/null 2>&1
 source install/setup.bash
 
 LOG=/tmp/mypkg_test.log
 rm -f "$LOG"
 
-# launch で同時起動（バックグラウンド）
-timeout 15 ros2 launch mypkg talk_listen.launch.py > "$LOG" 2>&1 &
-PID=$!
+# launch で talker / listener 同時起動
+timeout 15 ros2 launch mypkg talk_listen.launch.py > "$LOG" 2>&1 || true
 
-# 最大10秒、Publish/Listenが出るまで待つ
-for i in {1..10}; do
-    if grep -q "Publish:" "$LOG" && grep -q "Listen:" "$LOG"; then
-        echo "OK: Publish and Listen detected"
-        break
-    fi
-    sleep 1
-done
-
-# 最終チェック
+# ログに Publish / Listen があるか確認
 grep -q "Publish:" "$LOG"
 grep -q "Listen:" "$LOG"
 
-wait $PID || true
+exit 0
 
