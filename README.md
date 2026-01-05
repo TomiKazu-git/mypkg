@@ -16,7 +16,7 @@
 
 ```
 $ cd ~/ros2_ws/src
-$ git clone [https://github.com/TomiKazu-git/mypkg.git](https://github.com/TomiKazu-git/mypkg.git)
+$ git clone https://github.com/TomiKazu-git/mypkg.git
 $ cd ~/ros2_ws
 $ colcon build
 $ source install/setup.bash
