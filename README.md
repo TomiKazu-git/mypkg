@@ -5,27 +5,18 @@
 ## 説明
 [![test](https://github.com/TomiKazu-git/mypkg/actions/workflows/test.yml/badge.svg)](https://github.com/TomiKazu-git/mypkg/actions/workflows/test.yml)
 
-`mypkg` は、**ROS 2 の現在時刻を人が読みやすい形式に変換し、トピック通信で配信する学習用パッケージ**です。
+`mypkg` は、現在時刻を「YYYY-MM-DD HH:MM:SS」形式に変換し、トピック通信で配信・表示するパッケージです。
 
-- `talker` ノードが現在時刻を文字列に変換してトピックに publish
-- `listener` ノードがその時刻文字列を subscribe して端末に表示
-- ROS 2 の **トピック通信（publish / subscribe）** を利用しています
-
-## ノード構成
-
-### talker
-- 現在時刻を取得し、`YYYY-MM-DD HH:MM:SS` 形式の文字列に変換
-- トピック `formatted_time` に publish（1秒周期）
-
-### listener
-- トピック `formatted_time` を subscribe
-- 受信した時刻文字列を端末に出力
+- `talker` 現在時刻を取得・整形し、トピック `formatted_time` にパブリッシュします。
+- `listener` 受信した時刻文字列を標準出力に表示します。
 
 ## 使用方法
 
 ### ビルド
 
 ```
+$cd ~/ros2_ws/src
+$ git clone [https://github.com/TomiKazu-git/mypkg.git](https://github.com/TomiKazu-git/mypkg.git)
 $ cd ~/ros2_ws
 $ colcon build
 $ source install/setup.bash
@@ -33,11 +24,7 @@ $ source install/setup.bash
 
 ### 実行
 ```
-# 端末1
-$ ros2 run mypkg listener
-
-# 端末2
-$ ros2 run mypkg talker
+$ ros2 launch mypkg talk_listen.launch.py
 
 #実行結果例
 [listener] Listen: 2025-12-31 12:00:00
@@ -47,10 +34,11 @@ $ ros2 run mypkg talker
 
 ## テスト環境
 
-- GitHub Actions
-- Ubuntu 22.04.5 LTS
-- Python
-  - テスト済みバージョン: 3.7~3.12
+- **GitHub Actions (CI)**
+  - **OS**: Ubuntu 22.04.5 LTS (GitHub Actions Runner: `ubuntu-22.04`)
+  - **ROS 2**: Humble
+- **Python**
+  - バージョン: 3.10.x
 
 ## ライセンス
 
