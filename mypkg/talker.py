@@ -5,33 +5,36 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-
+from datetime import datetime
 
 class Talker(Node):
     def __init__(self):
         super().__init__('talker')
-        self.publisher = self.create_publisher(String, 'chatter', 10)
+        self.publisher = self.create_publisher(String, 'formatted_time', 10)
         self.timer = self.create_timer(1.0, self.timer_callback)
         self.count = 0
 
     def timer_callback(self):
         msg = String()
-        msg.data = f"Hello {self.count}"
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        msg.data = f"{now}"
         self.publisher.publish(msg)
         print(f"Publish: {msg.data}", flush=True)
         self.count += 1
+        # 3回送ったら停止
         if self.count >= 3:
             rclpy.shutdown()
-
 
 def main():
     rclpy.init()
     node = Talker()
-    rclpy.spin(node)
-    node.destroy_node()
-
+    try:
+        rclpy.spin(node)
+    except (KeyboardInterrupt, rclpy.executors.ExternalShutdownException):
+        pass
+    finally:
+        node.destroy_node()
 
 if __name__ == '__main__':
     main()
-
 

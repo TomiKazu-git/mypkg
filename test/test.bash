@@ -4,26 +4,22 @@
 
 set -e
 
-DIR=$HOME
-[ "$1" != "" ] && DIR="$1"
+DIR=$1
+[ "$DIR" = "" ] && DIR=$HOME
 
 cd "$DIR/ros2_ws"
 colcon build
 source install/setup.bash
 
-# ログファイルの準備
-touch /tmp/mypkg_listener.log
-chmod 666 /tmp/mypkg_listener.log
+# talk_listen.launch.py を使って起動し、出力をログへ
+# 10秒経ったら自動で終了させる
+timeout 10s ros2 launch mypkg talk_listen.launch.py > /tmp/mypkg.log 2>&1 || true
 
-# listener をバックグラウンドで起動
-timeout 10 python3 "$DIR/ros2_ws/src/mypkg/mypkg/listener.py" > /tmp/mypkg_listener.log 2>&1 &
-LISTENER_PID=$!
-
-# talker を起動 
-timeout 10 python3 "$DIR/ros2_ws/src/mypkg/mypkg/talker.py" > /tmp/mypkg_talker.log 2>&1 || true
-
-# listener の終了待ち
-wait $LISTENER_PID || true
-
-# ログ内容を確認
-cat /tmp/mypkg_listener.log
+if grep -q "Listen: 202" /tmp/mypkg.log; then
+    echo "Test Passed"
+    exit 0
+else
+    echo "Test Failed"
+    cat /tmp/mypkg.log
+    exit 1
+fi
