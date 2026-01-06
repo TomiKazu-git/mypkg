@@ -4,11 +4,14 @@
 
 ## 説明
 [![test](https://github.com/TomiKazu-git/mypkg/actions/workflows/test.yml/badge.svg)](https://github.com/TomiKazu-git/mypkg/actions/workflows/test.yml)
+`mypkg` は、システムの現在時刻を取得し、「YYYY-MM-DD HH:MM:SS」形式の文字列として配信・表示するROS 2パッケージです。
 
-`mypkg` は、現在時刻を「YYYY-MM-DD HH:MM:SS」形式に変換し、トピック通信で配信・表示するパッケージです。
-
-- `talker` 現在時刻を取得・整形し、トピック `formatted_time` にパブリッシュします。
-- `listener` 受信した時刻文字列を標準出力に表示します。
+- **talker (実行コマンド: `talker`)**: 
+  - 役割: 現在時刻を取得・整形し、1秒周期でパブリッシュします。
+  - 送信トピック名: `formatted_time`
+  - メッセージ型: `std_msgs/String`
+- **listener (実行コマンド: `listener`)**: 
+  - 役割: トピック `formatted_time` を購読し、受信した文字列を標準出力に表示します。
 
 ## 使用方法
 
@@ -23,6 +26,8 @@ $ source install/setup.bash
 ```
 
 ### 実行
+ローンチファイルを使用して、パブリッシャー（talker）とリスナー（listener）の両方を同時に起動します。
+
 ```
 $ ros2 launch mypkg talk_listen.launch.py
 
