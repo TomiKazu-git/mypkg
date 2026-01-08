@@ -53,8 +53,14 @@ $ ros2 launch mypkg talk_listen.launch.py
 [listener-2] Listen: 2025-12-31 12:00:01 (UnixTime: 1767150001.0)
 ...
 ```
-
+### パラメータによる配信頻度の変更
+`talker` ノードは `publish_rate` パラメータ（デフォルト: 1.0Hz）を持っています。
+以下のように起動することで、配信頻度を動的に変更可能です。
+```
+# 10Hz（1秒間に10回）で配信する場合
+$ ros2 run mypkg talker --ros-args -p publish_rate:=10.0
 ## テスト環境
+```
 
 - **GitHub Actions (CI)**
   - **OS**: Ubuntu 22.04.5 LTS (GitHub Actions Runner: `ubuntu-22.04`)
