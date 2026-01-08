@@ -16,13 +16,23 @@ class Talker(Node):
 
     def timer_callback(self):
         msg = String()
-        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        msg.data = f"{now}"
+        now = datetime.now()
+        # 人間が読みやすい形式
+        formatted_now = now.strftime('%Y-%m-%d %H:%M:%S')
+        # コンピュータが処理しやすい形式 (Unix Time)
+        unix_time = now.timestamp()
+        
+        # 両方のデータを組み合わせて送信
+        msg.data = f"{formatted_now} (UnixTime: {unix_time})"
+        
         self.publisher.publish(msg)
         print(f"Publish: {msg.data}", flush=True)
         self.count += 1
+        
         # 3回送ったら停止
         if self.count >= 3:
+
+            self.get_logger().info("Finished publishing 3 messages. Shutting down...")
             rclpy.shutdown()
 
 def main():
@@ -33,7 +43,10 @@ def main():
     except (KeyboardInterrupt, rclpy.executors.ExternalShutdownException):
         pass
     finally:
-        node.destroy_node()
+
+        if rclpy.ok():
+            node.destroy_node()
+            rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
