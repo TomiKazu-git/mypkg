@@ -26,7 +26,7 @@ source install/setup.bash
 timeout 10s ros2 launch mypkg talk_listen.launch.py > /tmp/mypkg.log 2>&1 || true
 
 # ログの確認
-if grep -q "Listen: 202" /tmp/mypkg.log; then
+if grep -q "Listen: 202" /tmp/mypkg.log && grep -q "UnixTime:" /tmp/mypkg.log; then
     echo "Test Passed"
     exit 0
 else
