@@ -6,31 +6,47 @@
 [![test](https://github.com/TomiKazu-git/mypkg/actions/workflows/test.yml/badge.svg)](https://github.com/TomiKazu-git/mypkg/actions/workflows/test.yml)
 `mypkg` は、システムの現在時刻を取得し、「YYYY-MM-DD HH:MM:SS」形式の文字列として配信・表示するROS 2パッケージです。
 
-- **talker (実行コマンド: `talker`)**: 
-  - 役割: 現在時刻を取得・整形し、1秒周期でパブリッシュします。
-  - 送信トピック名: `formatted_time`
-  - メッセージ型: `std_msgs/String`
-- **listener (実行コマンド: `listener`)**: 
-  - 役割: トピック `formatted_time` を購読し、受信した文字列を標準出力に表示します。
+- **talker ノード**: 
+  - 役割: 現在時刻を取得・整形し、1秒周期でメッセージを送信します。
+  - 起動方法: ros2 run mypkg talker
+- **listener ノード**: 
+  - 役割: トピック `formatted_time` から文字列を受信し、標準出力に表示します。
+　- 起動方法: ros2 run mypkg listener
 
 ## 使用方法
 
-### ビルド
+### インストール
+ROS 2ワークスペースの `src` ディレクトリにクローンし、ビルドしてください。
 
 ```
-$ cd ~/ros2_ws/src
 $ git clone https://github.com/TomiKazu-git/mypkg.git
-$ cd ~/ros2_ws
-$ colcon build
-$ source install/setup.bash
 ```
 
 ### 実行
-ローンチファイルを使用して、パブリッシャー（talker）とリスナー（listener）の両方を同時に起動します。
+各ノードは個別に起動でき、標準的なROS 2ツールとの連携が可能です。
+
+## talker ノードの起動
+ターミナルで以下のコマンドを実行し、時刻の配信を開始します。
 
 ```
+$ ros2 run mypkg talker
+```
+## 配信内容の確認
+別のターミナルで以下のコマンドを実行することで、ノードが正しくデータを配信しているか確認できます。
+```
+$ ros2 topic echo /formatted_time
+# 出力例
+# data: "2025-12-31 12:00:00"
+```
+## listener ノードの起動
+さらに別のターミナルで以下のコマンドを実行し、配信された内容を表示します。
+```
+$ ros2 run mypkg listener
+```
+## ローンチファイルによる一括起動
+上記ノードを同時に起動する場合は、ローンチファイルを使用します。
+```
 $ ros2 launch mypkg talk_listen.launch.py
-
 #実行結果例
 [listener-2] Listen: 2025-12-31 12:00:00
 [listener-2] Listen: 2025-12-31 12:00:01
