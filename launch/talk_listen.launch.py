@@ -11,7 +11,9 @@ def generate_launch_description():
         Node(
             package='mypkg',
             executable='talker',
-            output='screen'
+            output='screen',
+            # 配信頻度を1.0Hz（1秒に1回）に設定
+            parameters=[{'publish_rate': 1.0}]
         ),
         Node(
             package='mypkg',

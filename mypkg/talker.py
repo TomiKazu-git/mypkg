@@ -10,8 +10,16 @@ from datetime import datetime
 class Talker(Node):
     def __init__(self):
         super().__init__('talker')
+        
+        # パラメータ 'publish_rate' を宣言（デフォルト値 1.0Hz）
+        self.declare_parameter('publish_rate', 1.0)
+        # 設定された値を取り出す
+        rate = self.get_parameter('publish_rate').value
+        
         self.publisher = self.create_publisher(String, 'formatted_time', 10)
-        self.timer = self.create_timer(1.0, self.timer_callback)
+        
+        # 1.0秒を rate で割って周期を決める
+        self.timer = self.create_timer(1.0 / rate, self.timer_callback)
         self.count = 0
 
     def timer_callback(self):
