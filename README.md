@@ -5,8 +5,8 @@
 ## 説明
 [![test](https://github.com/TomiKazu-git/mypkg/actions/workflows/test.yml/badge.svg)](https://github.com/TomiKazu-git/mypkg/actions/workflows/test.yml)
 
-- `mypkg` は、システムの現在時刻を取得し、「YYYY-MM-DD HH:MM:SS」形式の人間が読みやすい時刻と、コンピュータが処理しやすい UnixTime（エポック秒）を組み合わせて配信・表示するROS 2パッケージです。
-- 本パッケージは、人間用のフォーマット済み時刻と解析用のUnixTimeを同時に配信することで、ログ記録システムや他ノードとの時刻同期など、実用的なロボットシステムへの統合を容易にする設計としています。
+`mypkg` は、システムの現在時刻を取得し、「YYYY-MM-DD HH:MM:SS」形式の人間が読みやすい時刻と、コンピュータが処理しやすい UnixTime（エポック秒）を組み合わせて配信・表示するROS 2パッケージです。
+本パッケージは、人間用のフォーマット済み時刻と解析用のUnixTimeを同時に配信することで、ログ記録システムや他ノードとの時刻同期など、実用的なロボットシステムへの統合を容易にする設計としています。
 
 - **talker ノード**: 
   - 役割: 現在時刻を取得・整形し、設定された周期でメッセージを送信します。
@@ -60,7 +60,6 @@ $ ros2 launch mypkg talk_listen.launch.py
 ```
 # 10Hz（1秒間に10回）で配信する場合
 $ ros2 run mypkg talker --ros-args -p publish_rate:=10.0
-## テスト環境
 ```
 ## テスト環境
 - **GitHub Actions (CI)**
