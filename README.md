@@ -36,7 +36,7 @@ $ ros2 run mypkg talker
 ```
 $ ros2 topic echo /formatted_time
 # 出力例
-# data: "2025-12-31 12:00:00"
+# data: "2025-12-31 12:00:00 (UnixTime: 1767150000.0)"
 ```
 ### listener ノードの起動
 さらに別のターミナルで以下のコマンドを実行し、配信された内容を表示します。
@@ -48,8 +48,8 @@ $ ros2 run mypkg listener
 ```
 $ ros2 launch mypkg talk_listen.launch.py
 #実行結果例
-[listener-2] Listen: 2025-12-31 12:00:00
-[listener-2] Listen: 2025-12-31 12:00:01
+[listener-2] Listen: 2025-12-31 12:00:00 (UnixTime: 1767150000.0)
+[listener-2] Listen: 2025-12-31 12:00:01 (UnixTime: 1767150001.0)
 ...
 ```
 
