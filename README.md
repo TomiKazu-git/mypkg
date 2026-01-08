@@ -6,9 +6,10 @@
 [![test](https://github.com/TomiKazu-git/mypkg/actions/workflows/test.yml/badge.svg)](https://github.com/TomiKazu-git/mypkg/actions/workflows/test.yml)
 
 `mypkg` は、システムの現在時刻を取得し、「YYYY-MM-DD HH:MM:SS」形式の人間が読みやすい時刻と、コンピュータが処理しやすい UnixTime（エポック秒）を組み合わせて配信・表示するROS 2パッケージです。
+**本パッケージは、人間用のフォーマット済み時刻と解析用のUnixTimeを同時に配信することで、ログ記録システムや他ノードとの時刻同期など、実用的なロボットシステムへの統合を容易にする設計としています。**
 
 - **talker ノード**: 
-  - 役割: 現在時刻を取得・整形し、1秒周期でメッセージを送信します。
+  - 役割: 現在時刻を取得・整形し、設定された周期でメッセージを送信します。
   - 起動方法: ros2 run mypkg talker
 - **listener ノード**: 
   - 役割: トピック `formatted_time` から文字列を受信し、標準出力に表示します。
